@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package digital.tull.project.byron.builder;
+package digital.tull.project.byron.transaction;
 
-
-
-public class SchemaBuilder
+public class BasicTransaction implements TableStatement
 {
-    
+	private final String tableName;
+	
+	public BasicTransaction(String tableName)
+	{
+		this.tableName = tableName;
+	}
+	
+	@Override
+	public String getStatement()
+	{
+		return tableName;
+	}
 }

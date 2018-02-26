@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package digital.tull.project.byron.builder;
+package digital.tull.project.byron.transaction;
 
-
-
-public interface Buildable
+public class DeleteTransaction extends TransactionDecorator
 {
-    void build();
+	public DeleteTransaction(TableStatement tableStatement)
+	{
+		super(tableStatement);
+	}
+	
+	@Override
+	public String getStatement()
+	{
+		return "DELETE FROM " + super.getStatement() + " WHERE ? = ?";
+	}
 }

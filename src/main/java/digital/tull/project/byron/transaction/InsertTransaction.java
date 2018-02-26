@@ -16,33 +16,34 @@
 
 package digital.tull.project.byron.transaction;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import digital.tull.project.byron.builder.Entity;
 
 
-
-public class DMLTransaction implements Transaction
+public class InsertTransaction extends TransactionDecorator
 {
-    private int key;
-    private Entity entity;
-    private TransactionType transactionType;
+    private int numberOfValues;
     
-    public DMLTransaction(TransactionType transactionType, Entity entity)
+    public InsertTransaction(TableStatement tableStatement, int numberOfValues)
     {
-        this.transactionType = transactionType;
-        this.entity = entity;
+    	super(tableStatement);
+        this.numberOfValues = numberOfValues;
     }
     
     @Override
-    public List<Object> build()
+    public String getStatement()
     {
-        List<Object> transactionList = new ArrayList<>();
-        
-        transactionList.add(0, transactionType);
-        transactionList.add(1, entity);
-        
-        return transactionList;
+    	StringBuilder newStatement = new StringBuilder();
+    	
+    	newStatement.append("INSERT INTO " + super.getStatement() + " VALUES ( ");
+    	
+    	for (int i = 0; i < numberOfValues; i++)
+    	{
+    		newStatement.append("?,");
+    	}
+    	
+    	newStatement.deleteCharAt(newStatement.length());
+    	
+    	newStatement.append(")");
+    	
+    	return newStatement.toString();
     }
 }

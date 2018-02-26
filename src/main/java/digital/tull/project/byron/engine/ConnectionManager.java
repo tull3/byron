@@ -27,51 +27,36 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import digital.tull.project.byron.builder.Entity;
-import digital.tull.project.byron.builder.Schema;
 import digital.tull.project.byron.session.Session;
 import digital.tull.project.byron.session.User;
 import digital.tull.project.byron.transaction.DDLTransaction;
-import digital.tull.project.byron.transaction.DMLTransaction;
-import digital.tull.project.byron.transaction.Transaction;
-import digital.tull.project.byron.transaction.TransactionData;
+import digital.tull.project.byron.transaction.InsertTransaction;
+import digital.tull.project.byron.transaction.Entity;
+import digital.tull.project.byron.transaction.Table;
 import digital.tull.project.byron.transaction.TransactionType;
 
 
 
-public class EngineManager
+public class ConnectionManager
 {
     private static Connection conn;
-    private Session session;
-    private TransactionData transaction;
+    //private Session session;
+    private Table transaction;
     private static Properties defaultProps;
-    private DerbyEngine entityEngine;
-    private SchemaEngine schemaEngine;
+    private DataEngine entityEngine;
     
-    private EngineManager(Session session)
+    public ConnectionManager()
     {
-        this.session = session;
-        //this.transaction = transaction;
-        
-        entityEngine = new DerbyEngine();
-        //schemaEngine = new SchemaEngine(transaction);
+    	
     }
     
-    public static EngineManager Start(Session session)
+    public Connection getConnection()
     {
-        EngineManager em = null;
-        
-        if (!session.isValidSession())
+    	Connection connection = null;
+    	
+    	try
         {
-            return em;
-        }
-        
-        em = new EngineManager(session);
-        
-        try
-        {
-            loadDefaultProperties(session.getUser());
+            //loadDefaultProperties(session.getUser());
 
             //defaultProperties.put("jdbc.drivers", "org.apache.derby.jdbc.EmbeddedDriver");
             defaultProps.setProperty("user", "APP");
@@ -80,7 +65,7 @@ public class EngineManager
             
             DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
             
-            conn = DriverManager.getConnection("jdbc:derby:" + defaultProps.getProperty("derby.system.home")
+            connection = DriverManager.getConnection("jdbc:derby:" + defaultProps.getProperty("derby.system.home")
                     + defaultProps.getProperty("derby.db.name"), defaultProps);
             
             //conn.setAutoCommit(false);
@@ -91,11 +76,48 @@ public class EngineManager
             e.printStackTrace();
             
         }
-        
-        
-        
-        return em;
+    	
+    	return connection;
     }
+    
+//    public static ConnectionManager Start(Session session)
+//    {
+//        ConnectionManager em = null;
+//        
+//        if (!session.isValidSession())
+//        {
+//            return em;
+//        }
+//        
+//        em = new ConnectionManager(session);
+//        
+//        try
+//        {
+//            loadDefaultProperties(session.getUser());
+//
+//            //defaultProperties.put("jdbc.drivers", "org.apache.derby.jdbc.EmbeddedDriver");
+//            defaultProps.setProperty("user", "APP");
+//            defaultProps.setProperty("password", "APP");
+//            //final String URL = "jdbc:derby:/home/will/.netbeans-derby/rome;";
+//            
+//            DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
+//            
+//            conn = DriverManager.getConnection("jdbc:derby:" + defaultProps.getProperty("derby.system.home")
+//                    + defaultProps.getProperty("derby.db.name"), defaultProps);
+//            
+//            //conn.setAutoCommit(false);
+//        }
+//        
+//        catch (SQLException e)
+//        {
+//            e.printStackTrace();
+//            
+//        }
+//        
+//        
+//        
+//        return em;
+//    }
     
     public static void Stop()
     {
@@ -126,15 +148,15 @@ public class EngineManager
         
         finally
         {
-            try
-            {
-                conn.close();
-            }
-            
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
+//            try
+//            {
+//                conn.close();
+//            }
+//            
+//            catch (SQLException e)
+//            {
+//                e.printStackTrace();
+//            }
         }
     }
     
@@ -161,24 +183,9 @@ public class EngineManager
         }
     }
     
-    protected static Connection GetConnection()
+    public static Connection GetConnection()
     {
         return conn;
-    }
-    
-    public List<Entity> getEntityList(String tableName)
-    {
-        return entityEngine.getEntityList(tableName);
-    }
-    
-    public String[] getTableNames()
-    {
-        return entityEngine.getTableNames();
-    }
-    
-    public String getPrimaryKeyColumn(String tableName)
-    {
-        return entityEngine.getPrimaryKeyColumn(tableName);
     }
     
 //    public DerbyEngine getEntityEngine()
@@ -221,40 +228,40 @@ public class EngineManager
 //        }
 //    }
     
-    public void doWork(Transaction trans)
-    {
-        List<Object> transactionList = new ArrayList<>();
-        
-        transactionList = trans.build();
-        
-        if (trans instanceof DMLTransaction)
-        {
-            TransactionType transType = (TransactionType) transactionList.get(0);
-            Entity entity = (Entity) transactionList.get(1);
-            
-            switch (transType)
-            {
-                case CREATE_ENTITY:
-                    entityEngine.createEntity(entity);
-                    break;
-                    
-                case MODIFY_ENTITY:
-                    entityEngine.modifyEntity(entity);
-                    break;
-                    
-                case DELETE_ENTITY:
-                    entityEngine.deleteEntity(entity);
-                    break;
-                    
-                default:
-                    System.out.println("Nothing happened.");
-                    break;
-            }
-        }
-        
-        else if (trans instanceof DDLTransaction)
-        {
-            
-        }
-    }
+//    public void doWork(Transaction trans)
+//    {
+//        List<Object> transactionList = new ArrayList<>();
+//        
+//        transactionList = trans.build();
+//        
+//        if (trans instanceof InsertTransaction)
+//        {
+//            TransactionType transType = (TransactionType) transactionList.get(0);
+//            Entity entity = (Entity) transactionList.get(1);
+//            
+//            switch (transType)
+//            {
+//                case CREATE_ENTITY:
+//                    entityEngine.createEntity(entity);
+//                    break;
+//                    
+//                case MODIFY_ENTITY:
+//                    entityEngine.modifyEntity(entity);
+//                    break;
+//                    
+//                case DELETE_ENTITY:
+//                    entityEngine.deleteEntity(entity);
+//                    break;
+//                    
+//                default:
+//                    System.out.println("Nothing happened.");
+//                    break;
+//            }
+//        }
+//        
+//        else if (trans instanceof DDLTransaction)
+//        {
+//            
+//        }
+//    }
 }

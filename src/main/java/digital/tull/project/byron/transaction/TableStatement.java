@@ -14,29 +14,9 @@
  * limitations under the License.
  */
 
-package digital.tull.project.byron.engine;
+package digital.tull.project.byron.transaction;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-
-public class TransactionQueue
+public interface TableStatement
 {
-    private static List<Object> queue = new ArrayList<>();
-    
-    public static void Add(Object object)
-    {
-        queue.add(object);
-    }
-    
-    public static void Flush()
-    {
-        queue = null;
-    }
-    
-    public static List<Object> Get()
-    {
-        return queue;
-    }
+	public String getStatement();
 }

@@ -17,6 +17,7 @@
 package digital.tull.project.byron.logic;
 
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 
@@ -98,13 +99,20 @@ public class Menus
             {
                 option = in.nextInt();
             }
-        
-            catch (InputMismatchException e)
+            
+            catch (NoSuchElementException e)
             {
-                System.out.println(e.toString());
-                option = -1;
-                System.out.println("Please try again.");
+            	System.out.println(e.toString());
+            	option = -1;
+            	System.out.println("Please try again.");
             }
+        
+//            catch (InputMismatchException e)
+//            {
+//                System.out.println(e.toString());
+//                option = -1;
+//                System.out.println("Please try again.");
+//            }
         }
         
         return option;
@@ -166,5 +174,36 @@ public class Menus
         }
         
         return option;
+    }
+    
+    public static void Welcome()
+    {
+    	System.out.println("--Welcome to Byron--");
+        
+        for (int counter = 0; counter <= 11; counter++)
+        {
+            int number = fibonacci(counter);
+            
+            for (int i = 1; i <= number; i++)
+            {
+                System.out.print("*");
+            }
+            System.out.println();
+            
+        }
+        
+        System.out.println();
+        
+        System.out.println("--The Tull Project--");
+        
+        System.out.println();
+    }
+    
+    public static int fibonacci(int number)
+    {
+        if (number == 0 || number == 1)
+            return number;
+        else
+            return fibonacci(number - 1) + fibonacci(number - 2);
     }
 }

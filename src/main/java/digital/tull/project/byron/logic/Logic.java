@@ -25,16 +25,15 @@ import javax.sql.DataSource;
 import org.apache.commons.cli.Options;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 
-import digital.tull.project.byron.builder.Entity;
-import digital.tull.project.byron.builder.EntityFactory;
-import digital.tull.project.byron.engine.DerbyEngine;
-import digital.tull.project.byron.engine.EngineManager;
+import digital.tull.project.byron.engine.DataEngine;
+import digital.tull.project.byron.engine.ConnectionManager;
 import digital.tull.project.byron.session.Authenticator;
 import digital.tull.project.byron.session.Session;
 import digital.tull.project.byron.session.User;
-import digital.tull.project.byron.transaction.DMLTransaction;
-import digital.tull.project.byron.transaction.Transaction;
-import digital.tull.project.byron.transaction.TransactionData;
+import digital.tull.project.byron.transaction.InsertTransaction;
+import digital.tull.project.byron.transaction.Entity;
+import digital.tull.project.byron.transaction.EntityFactory;
+import digital.tull.project.byron.transaction.Table;
 import digital.tull.project.byron.transaction.TransactionType;
 
 
@@ -43,7 +42,7 @@ public class Logic
 {
     private Session session;
     private Scanner input = new Scanner(System.in);
-    private EngineManager engine;
+    private ConnectionManager engine;
     //private TransactionData transaction;
     private List<Entity> entityList = new ArrayList<>();
     Options options = new Options();
@@ -56,15 +55,41 @@ public class Logic
         options.addOption("lr", "list-records", false, "List existing records.");
     }
     
-    public void run(String[] args)
+    public void run()
     {
         session();
         
-        //engine.connect();
+        session.setTableNames(new ConnectionManager().getConnection(session));
         
-        looper();
+        int option = 3;
         
-        EngineManager.Stop();
+        while (option < 4 && option >= 0)
+        {
+        	option = Menus.TransactionMenu();
+        	engine(option);
+        };
+        
+        
+        
+        
+        
+        //ConnectionManager.Stop();
+    }
+    
+    public void runWithArgs(String[] args)
+    {
+    	session();
+    	
+    	session.setTableNames(new ConnectionManager().getConnection(session));
+    	
+    	if (args[0].equals("create"))
+    		engine(0);
+    	
+    	else if (args[0].equals("modify"))
+    		engine(1);
+    	
+    	else if (args[0].equals("delete"))
+    		engine(3);
     }
     
     private void session()
@@ -81,149 +106,112 @@ public class Logic
         
         while (!session.isValidSession());
         
-        //transaction = new TransactionData(session);
-        engine = EngineManager.Start(session);
+        System.out.println("Loading...");
+        
         
     }
     
     private void engine(int option)
     {
-//        if (option == 4)
-//            return;
-        
+    	if (option == 4)
+    		return;
+    	
         TransactionType[] transactions = TransactionType.values();
         TransactionType transactionType = transactions[option];
-        //entityList = engine.getEntityList(tableName);
-        
-        //DerbyEngine engine = new DerbyEngine(session);
-        
-        //engine.connect();
-        
-//        int option = Menus.TransactionMenu();
-//        
-//        while (option < 4 && option >= 0)
-//        {
-            //Entity entity = new Entity();
             
-            //transaction.setTransactionType(transactions[option]);
-            
-            System.out.println("Which table would you like to work with?");
+        System.out.println("Which table would you like to work with?");
+    
+        String[] tableNames = session.getTableNames();
+    
+        for (int i = 0; i < tableNames.length; i++)
+            System.out.println(i + ":  " + tableNames[i].substring(4));
+    
+        //Entity entity;
         
-            String[] tableNames = engine.getTableNames();
+        int tableOption = -1;
         
-            for (int i = 0; i < tableNames.length; i++)
-                System.out.println(i + ":  " + tableNames[i]);
-        
-            Entity entity;
-            
-            int tableOption = -1;
-            
-            while (tableOption == -1)
+        while (tableOption == -1)
+        {
+            try
             {
+                tableOption = input.nextInt();
+            }
+            
+            catch (NullPointerException e)
+            {
+                System.out.println("Please try again.");
+            }
+            
+            
+        }
+        
+        Table table = new Table(tableNames[tableOption], session);
+        
+        table.populateData();
+        
+        Entity entity = new Entity();
+    
+        entityList = table.getEntityList();
+        
+        if (transactionType != null)
+        switch (transactionType)
+        {
+                
+            case DELETE_ENTITY:
+            	
+            	entity.setDeleteFlag(true);
+            	
+            case MODIFY_ENTITY:
+                
+                System.out.println("Which record would you like to work with?");
+                
+                for (int i = 0; i < entityList.size(); i++)
+                {
+                    System.out.println(i + ":  " + entityList.get(i).getPKValue(table.getPKColumn()));
+                }
+                
+                int record = -1;
+                
                 try
                 {
-                    tableOption = input.nextInt();
+                	record = input.nextInt();
                 }
                 
                 catch (NullPointerException e)
                 {
-                    System.out.println("Please try again.");
+                	e.printStackTrace();
                 }
                 
+                entity.setProperties(entityList.get(record).getProperties());
                 
-            }
+                table.setActiveRecord(entityList.get(record).getPKValue(table.getPKColumn()));
                 
-            entity = new Entity().setTableName(tableNames[tableOption]).setPKColumn(engine.getPrimaryKeyColumn(tableNames[tableOption]));
-        
-            entityList = engine.getEntityList(tableNames[tableOption]);
-            
-            Entity entityScaffold = entityList.get(0);
-            
-            if (transactionType != null)
-            switch (transactionType)
-            {
-                    
-                case DELETE_ENTITY:
-                case MODIFY_ENTITY:
-                    
-                    System.out.println("Which record would you like to work with?");
-                    
-                    for (int i = 0; i < entityList.size(); i++)
-                    {
-                        System.out.println(i + ":  " + entityList.get(i).getPKValue());
-                    }
-                    
-                    int record = input.nextInt();
-                    //String[] set = new String[2];
-                    
-                    entity.setProperties(entityList.get(record).getProperties());
-                    //EntityBuilder.PrintEntity(entity);
-                    
-                    //set = entity.getProperties().toArray(new String[2]);
-                    
-                    //transaction.setWorkingRecord(entity.getPrimaryKey());
-                    
-//                    if (transactionType.equals(TransactionType.MODIFY_ENTITY))
-//                        entity = EntityFactory.ModifyEntity(entity);
-                    
-                case CREATE_ENTITY:
-                    
-                    Entity newEntity = new EntityFactory(entity, transactionType, entityScaffold).produceEntity();
-                    
-                    if (newEntity.isCanceled())
-                        break;
-                    
-                    engine.doWork(new DMLTransaction(transactionType, newEntity));
-                    
+            case CREATE_ENTITY:
+                
+                entity = table.buildEntity(entity);
+                
+                if (entity.isCanceled())
                     break;
-                    
-                case VIEW_ENTITY:
+                
+                table.mergeEntity(entity);
+                
+                break;
+                
+            case VIEW_ENTITY:
                     
 //                    for (int i = 0; i < entityList.size(); i++)
 //                    {
 //                        System.out.println(i + ":  " + entityList.get(i));
 //                    }
                     
-                    for (Entity e : entityList)
-                        EntityFactory.PrintEntity(e);
+                for (Entity e : entityList)
+                    EntityFactory.PrintEntity(e);
+                
+                break;
+                
+            default:
                     
-                    break;
-                    
-                default:
-                    
-//                    session.setTransactionType(null);
-//                    session.setWorkingRecord(null);
-//                    session.setWorkingTable(null);
-//                    session.setPrimaryKeyColumn(null);
-                    
-                    
-                    break;
-            }
-        
-//            if (option == 4)
-//                System.exit(1);
-            
-            //option = Menus.EntityMenu();
-        //}
-        
-        //transaction.log();
-        
-        //entity = null;
-        
-        //looper();
-        
-        //engine.disconnect();
-    }
-    
-    private void looper()
-    {
-        int option = Menus.TransactionMenu();
-        
-        while (option < 4 && option >= 0)
-        {
-            engine(option);
-            
-            option = Menus.TransactionMenu();
+                break;
         }
     }
 }

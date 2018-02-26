@@ -14,31 +14,19 @@
  * limitations under the License.
  */
 
-package digital.tull.project.byron.engine;
+package digital.tull.project.byron.transaction;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-
-import digital.tull.project.byron.builder.Schema;
-import digital.tull.project.byron.transaction.TransactionData;
-
-
-
-public class SchemaEngine
+public abstract class TransactionDecorator implements TableStatement
 {
-    private TransactionData transaction;
-    private String statement;
-    private PreparedStatement preparedStatement;
-    private Schema schema;
-    
-    public SchemaEngine(Schema schema)
-    {
-        
-        this.schema = schema;
-    }
-    
-    public void doWork()
-    {
-        
-    }
+	protected final TableStatement tableStatement;
+	
+	public TransactionDecorator(TableStatement tableStatement)
+	{
+		this.tableStatement = tableStatement;
+	}
+	
+	public String getStatement()
+	{
+		return tableStatement.getStatement();
+	}
 }

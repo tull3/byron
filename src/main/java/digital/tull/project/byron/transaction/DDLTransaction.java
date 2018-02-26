@@ -19,29 +19,25 @@ package digital.tull.project.byron.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import digital.tull.project.byron.builder.Schema;
 
 
-
-public class DDLTransaction implements Transaction
+public class DDLTransaction
 {
     private TransactionType transactionType;
-    private Schema schema;
     
-    public DDLTransaction(TransactionType transactionType, Schema schema)
+    public DDLTransaction(TransactionType transactionType)
     {
         this.transactionType = transactionType;
-        this.schema = schema;
     }
     
-    @Override
-    public List<Object> build()
-    {
-        List<Object> transactionList = new ArrayList<>();
-        
-        transactionList.add(0, transactionType);
-        transactionList.add(1, schema);
-        
-        return transactionList;
-    }
+//    @Override
+//    public List<Object> build()
+//    {
+//        List<Object> transactionList = new ArrayList<>();
+//        
+//        transactionList.add(0, transactionType);
+//        transactionList.add(1, schema);
+//        
+//        return transactionList;
+//    }
 }

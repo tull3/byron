@@ -18,13 +18,24 @@ package digital.tull.project.byron.session;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
-import digital.tull.project.byron.builder.Entity;
+import digital.tull.project.byron.engine.ConnectionManager;
+import digital.tull.project.byron.engine.DataEngine;
+import digital.tull.project.byron.transaction.Entity;
+import digital.tull.project.byron.transaction.Table;
 import digital.tull.project.byron.transaction.TransactionType;
 
 
@@ -35,13 +46,25 @@ public class Session
     //right now they are just used to conduct transactions
     private User user;
     private boolean validSession;
+    private String[] tableNamesArray;
+    private Properties properties;
+    private Table table;
     
-    private Session(User user)
+    private Session()
     {
-        if (user != null)
-            validSession = true;
-        
-        this.user = user;
+    	
+    }
+    
+    public void startSession()
+    {
+    	loadDefaultProperties();
+    	DataEngine.Connect(properties);
+    	//setTableData();
+    }
+    
+    public void loadSessionTable(String tableName)
+    {
+    	table = new Table(tableName);
     }
 
     public User getUser()
@@ -49,75 +72,124 @@ public class Session
         return user;
     }
 
-    //no setter for user or userGroup
-    //can only be set with authenticated user object in constructor
-
-    //validSession can only be set to true in the same way
-
     public boolean isValidSession()
     {
         return validSession;
     }
     
-    public static Session Login(User user)
+//    public Session Login(User user)
+//    {
+//        Session session = null;
+//        
+//        try (Scanner input = new Scanner(Paths.get("users.txt")))
+//        {
+//            String text = null;
+//            
+//            String[] items = new String[3];
+//            
+//            search:
+//            
+//            while (input.hasNextLine())
+//            {
+//                text = input.nextLine();
+//                
+//                items = text.split(";");
+//                
+//                if (items[0].equals(user.getID()) && items[1].equals(user.getPasswd()))
+//                {
+//                    user.setGroupID(items[2]);
+//                    session = new Session(user);
+//                    break search;
+//                }
+//            }
+//            
+//            if (session.isValidSession())
+//                System.out.println("User " + user.getID() + " is authenticated with group " + user.getGroupID() + ".");
+//            
+//            
+//            
+//        }
+//        catch (IOException e)
+//        {
+//            System.err.println(e.toString());
+//            System.exit(1);
+//        }
+//        
+//        catch (NullPointerException e)
+//        {
+//            System.out.println("User not authenticated.  Exiting.");
+//            System.exit(1);
+//        }
+//        
+//        loadDefaultProperties();
+//        
+//        return session;
+//    }
+    
+    private void loadDefaultProperties()
     {
-        Session session = null;
+        properties = new Properties();
         
-        try (Scanner input = new Scanner(Paths.get("users.txt")))
+        try (FileReader in = new FileReader(user.getID() + ".properties"))
         {
-            String text = null;
+            properties.load(in);
+        }
+        
+        catch (FileNotFoundException e)
+        {
+            System.out.println(e.toString());
+            System.out.println("User has not created default properties yet.");
+            return;
+        }
+        
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+    
+    private void setTableData(String tableName)
+    {
+    	String catalog = null;
+        String schema = "APP";
+        String table = tableName;
+        String column = null;
+        List<String> tableNames = new ArrayList<String>();
+        
+        try (
+                Statement s = DataEngine.GetConnection().createStatement(
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE
+                        );
+                ResultSet rs = s.executeQuery("select s.schemaname || '.' || t.tablename from sys.systables t, sys.sysschemas s where t.schemaid = s.schemaid and t.tabletype = 'T' order by s.schemaname, t.tablename");
+                )
+        {
+            ResultSetMetaData metaData = rs.getMetaData();
+            int numberOfColumns = metaData.getColumnCount();
             
-            String[] items = new String[3];
-            
-            search:
-            
-            while (input.hasNextLine())
+            while (rs.next())
             {
-                text = input.nextLine();
-                
-                items = text.split(";");
-                
-                if (items[0].equals(user.getID()) && items[1].equals(user.getPasswd()))
+                for (int i = 1; i <= numberOfColumns; i++)
                 {
-                    user.setGroupID(items[2]);
-                    session = new Session(user);
-                    break search;
+                    tableNames.add(rs.getString(i));
                 }
             }
             
-            if (session.isValidSession())
-                System.out.println("User " + user.getID() + " is authenticated with group " + user.getGroupID() + ".");
             
-            
-            
-        }
-        catch (IOException e)
-        {
-            System.err.println(e.toString());
-            System.exit(1);
         }
         
-        catch (NullPointerException e)
+        catch (SQLException e)
         {
-            System.out.println("User not authenticated.  Exiting.");
-            System.exit(1);
+            e.printStackTrace();
+            DataEngine.Disconnect();
         }
         
-        return session;
+        tableNamesArray = tableNames.toArray(new String[tableNames.size()]);
     }
     
-//    public List<Entity> getEntityList()
-//    {
-//        
-//    }
-    
-    public void updateEntityList()
+    public String[] getTableNames()
     {
-        
-    }
-    
-    public void loadSessionData()
-    {
-        
+    	return tableNamesArray;
     }
 }

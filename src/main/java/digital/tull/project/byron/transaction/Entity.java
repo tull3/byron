@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package digital.tull.project.byron.builder;
+package digital.tull.project.byron.transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,24 +25,31 @@ import java.util.Map;
 
 public class Entity
 {
-    private List<String[]> properties = new ArrayList<>();
+    private List<String[]> properties = new ArrayList<String[]>();
     //private List<String> map = new ArrayList();
-    private String pkColumn;
-    private String pkValue;
-    private String tableName;
+//    private String pkColumn;
+//    private String pkValue;
+//    private String tableName;
     private boolean cancelFlag;
+    private boolean deleteFlag;
+    private boolean blankFlag;
     
     //TODO: add foreign key fields that can't be changed at runtime, like Author's Name or pkColumn
     
     public Entity()
     {
-        
+        blankFlag = true;
     }
     
-    public Entity(String pkColumn, String tableName)
+//    public Entity(String pkColumn, String tableName)
+//    {
+//        this.pkColumn = pkColumn;
+//        this.tableName = tableName;
+//    }
+    
+    public boolean isBlank()
     {
-        this.pkColumn = pkColumn;
-        this.tableName = tableName;
+    	return blankFlag;
     }
 
     public boolean isCanceled()
@@ -50,7 +57,15 @@ public class Entity
         return cancelFlag;
     }
 
-    public void setCancelFlag(boolean cancelFlag)
+    public boolean hasDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(boolean deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+
+	public void setCancelFlag(boolean cancelFlag)
     {
         this.cancelFlag = cancelFlag;
     }
@@ -71,29 +86,29 @@ public class Entity
         return value;
     }
     
-    public String getTableName()
-    {
-        return tableName;
-    }
+//    public String getTableName()
+//    {
+//        return tableName;
+//    }
+//    
+//    public Entity setTableName(String tableName)
+//    {
+//        this.tableName = tableName;
+//        return this;
+//    }
+//    
+//    public Entity setPKColumn(String pkColumn)
+//    {
+//        this.pkColumn = pkColumn;
+//        return this;
+//    }
+//    
+//    public String getPKColumn()
+//    {
+//        return pkColumn;
+//    }
     
-    public Entity setTableName(String tableName)
-    {
-        this.tableName = tableName;
-        return this;
-    }
-    
-    public Entity setPKColumn(String pkColumn)
-    {
-        this.pkColumn = pkColumn;
-        return this;
-    }
-    
-    public String getPKColumn()
-    {
-        return pkColumn;
-    }
-    
-    public String getPKValue()
+    public String getPKValue(String pkColumn)
     {
         String[] set = new String[2];
         
@@ -114,6 +129,7 @@ public class Entity
     
     public void setProperties(List<String[]> properties)
     {
+    	blankFlag = false;
         this.properties = properties;
     }
     
@@ -133,12 +149,19 @@ public class Entity
     
     public void setProperty(String key, String value)
     {
+    	blankFlag = false;
+    	
         String[] set = {key, value};
+        
         properties.add(set);
+        System.out.println(key + value);
+        System.out.println(set[0] + set[1]);
     }
     
     public void setProperties(String[] set)
     {
+    	blankFlag = false;
+    	
         properties.add(set);
     }
     

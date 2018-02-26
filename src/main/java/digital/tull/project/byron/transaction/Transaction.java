@@ -16,11 +16,13 @@
 
 package digital.tull.project.byron.transaction;
 
-import java.util.List;
 
 
-
-public interface Transaction
+public class Transaction implements TableStatement
 {
-    List<Object> build();
+	@Override
+    public String getStatement()
+    {
+		return new String();
+    }
 }

@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package digital.tull.project.byron.builder;
+package digital.tull.project.byron.transaction;
 
 import java.util.List;
 import java.util.Scanner;
 
-import digital.tull.project.byron.builder.Entity;
 import digital.tull.project.byron.logic.Menus;
 import digital.tull.project.byron.session.Session;
 import digital.tull.project.byron.session.User;
-import digital.tull.project.byron.transaction.TransactionType;
 
 
 
@@ -77,7 +75,7 @@ public class EntityFactory
     {
         Scanner input = new Scanner(System.in);
         
-        Entity newEntity = new Entity(entity.getPKColumn(), entity.getTableName());
+        Entity newEntity = new Entity();
         
         int option = 0;
         
@@ -157,7 +155,7 @@ public class EntityFactory
     
     public static Entity BuildEntity(List<Entity> entityList, String pkColumn, String tableName)
     {
-        Entity entity = new Entity(pkColumn, tableName);
+        Entity entity = new Entity();
         
         Scanner input = new Scanner(System.in);
         
@@ -177,8 +175,8 @@ public class EntityFactory
     public static Entity ModifyEntity(Entity entity)
     {
         Scanner input = new Scanner(System.in);
-        System.out.println(entity.getPKColumn() + entity.getTableName());
-        Entity newEntity = new Entity(entity.getPKColumn(), entity.getTableName());
+        //System.out.println(entity.getPKColumn() + entity.getTableName());
+        Entity newEntity = new Entity();
         
         String[] set = new String[2];
         
