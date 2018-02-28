@@ -14,7 +14,7 @@
             <artifactId>exec-maven-plugin</artifactId>
             <version>1.6.0</version>
             <configuration>
-                <mainClass>digital.tull.project.athens.App</mainClass>
+                <mainClass>digital.tull.project.byron.App</mainClass>
                 <arguments>
                     <argument/>
                 </arguments>
@@ -22,14 +22,14 @@
         </plugin>
         <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
+        <artifactId>maven-jar-plugin</artifactId>
         <version>2.6</version>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>digital.tull.project.athens.App</mainClass>
+              <mainClass>digital.tull.project.byron.App</mainClass>
             </manifest>
           </archive>
         </configuration>

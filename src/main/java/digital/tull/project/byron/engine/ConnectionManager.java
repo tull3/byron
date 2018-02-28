@@ -29,7 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import digital.tull.project.byron.session.Session;
 import digital.tull.project.byron.session.User;
-import digital.tull.project.byron.transaction.DDLTransaction;
 import digital.tull.project.byron.transaction.InsertTransaction;
 import digital.tull.project.byron.transaction.Entity;
 import digital.tull.project.byron.transaction.Table;

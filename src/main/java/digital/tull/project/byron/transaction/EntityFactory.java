@@ -43,7 +43,7 @@ public class EntityFactory
         if (transactionType.equals(TransactionType.DELETE_ENTITY))
             return entity;
 
-        return buildEntity();
+        return entity;
         
         //return newEntity;
     }
@@ -71,48 +71,48 @@ public class EntityFactory
 //        entity = null;
 //    }
     
-    private Entity buildEntity()
-    {
-        Scanner input = new Scanner(System.in);
-        
-        Entity newEntity = new Entity();
-        
-        int option = 0;
-        
-        while (option == 0)
-        {
-            String[] set = new String[2];
-            
-            newEntity.reset();
-            
-            if (transactionType.equals(TransactionType.CREATE_ENTITY))
-            {
-        
-                for (int i = 0; i < entityScaffold.getSize(); i++)
-                {
-                    set = entityScaffold.getProperty(i);
-            
-                    System.out.println(set[0]);
-                    newEntity.setProperty(set[0], input.nextLine());
-                }
-                
-                PrintEntity(newEntity);
-            }
-            
-            else if (transactionType.equals(TransactionType.MODIFY_ENTITY))
-            { 
-                
-                for (int i = 0; i < entity.getSize(); i++)
-                {
-                    set = entity.getProperty(i);
-            
-                    System.out.println("Current " + set[0] + ":  " + set[1]);
-            
-                    System.out.println("New " + set[0] + ":  ");
-                    newEntity.setProperty(set[0], input.nextLine());
-                }
-            
-                System.out.println("Modified entity:  ");
+//    private Entity buildEntity()
+//    {
+//        Scanner input = new Scanner(System.in);
+//        
+//        Entity newEntity = new Entity();
+//        
+//        int option = 0;
+//        
+//        while (option == 0)
+//        {
+//            String[] set = new String[2];
+//            
+//            newEntity.reset();
+//            
+//            if (transactionType.equals(TransactionType.CREATE_ENTITY))
+//            {
+//        
+//                for (int i = 0; i < entityScaffold.getSize(); i++)
+//                {
+//                    //set = entityScaffold.getProperty(i);
+//            
+//                    System.out.println(set[0]);
+//                    newEntity.setProperty(set[0], input.nextLine());
+//                }
+//                
+//                PrintEntity(newEntity);
+//            }
+//            
+//            else if (transactionType.equals(TransactionType.MODIFY_ENTITY))
+//            { 
+//                
+//                for (int i = 0; i < entity.getSize(); i++)
+//                {
+//                    //set = entity.getProperty(i);
+//            
+//                    System.out.println("Current " + set[0] + ":  " + set[1]);
+//            
+//                    System.out.println("New " + set[0] + ":  ");
+//                    newEntity.setProperty(set[0], input.nextLine());
+//                }
+//            
+//                System.out.println("Modified entity:  ");
             
 //            for (int i = 0; i < newEntity.getSize(); i++)
 //            {
@@ -121,23 +121,23 @@ public class EntityFactory
 //                System.out.println(set[0] + ":  " + set[1]);
 //            }
 
-                PrintEntity(newEntity);
-            }
-            
-            int i = Menus.ConfirmChanges();
-            
-            if (i == 3)
-                option = 3;
-                
-            if (i == 1)
-                option = 1;
-        }
-        
-        if (option == 3)
-            newEntity.setCancelFlag(true);
-        
-        return newEntity;
-    }
+//                PrintEntity(newEntity);
+//            }
+//            
+//            int i = Menus.ConfirmChanges();
+//            
+//            if (i == 3)
+//                option = 3;
+//                
+//            if (i == 1)
+//                option = 1;
+//        }
+//        
+//        if (option == 3)
+//            newEntity.setCancelFlag(true);
+//        
+//        return newEntity;
+//    }
     
     public static User BuildUser()
     {
@@ -153,76 +153,76 @@ public class EntityFactory
         return user;
     }
     
-    public static Entity BuildEntity(List<Entity> entityList, String pkColumn, String tableName)
-    {
-        Entity entity = new Entity();
-        
-        Scanner input = new Scanner(System.in);
-        
-        Entity entityScaffold = entityList.get(0);
-        
-        for (int i = 0; i < entityScaffold.getSize(); i++)
-        {
-            String[] set = entityScaffold.getProperty(i);
-            
-            System.out.println(set[0]);
-            entity.setProperty(set[0], input.nextLine());
-        }
-        
-        return entity;
-    }
+//    public static Entity BuildEntity(List<Entity> entityList, String pkColumn, String tableName)
+//    {
+//        Entity entity = new Entity();
+//        
+//        Scanner input = new Scanner(System.in);
+//        
+//        Entity entityScaffold = entityList.get(0);
+//        
+//        for (int i = 0; i < entityScaffold.getSize(); i++)
+//        {
+//            String[] set = null;//entityScaffold.getProperty(i);
+//            
+//            System.out.println(set[0]);
+//            entity.setProperty(set[0], input.nextLine());
+//        }
+//        
+//        return entity;
+//    }
     
-    public static Entity ModifyEntity(Entity entity)
-    {
-        Scanner input = new Scanner(System.in);
-        //System.out.println(entity.getPKColumn() + entity.getTableName());
-        Entity newEntity = new Entity();
-        
-        String[] set = new String[2];
-        
-        int option = 1;
-        
-        while (option > 0)
-        {
-            for (int i = 0; i < entity.getSize(); i++)
-            {
-                set = entity.getProperty(i);
-            
-                System.out.println("Current " + set[0] + ":  " + set[1]);
-            
-                System.out.println("New " + set[0] + ":  ");
-                newEntity.setProperty(set[0], input.nextLine());
-            }
-            
-            System.out.println("Modified entity:  ");
-            
-            for (int i = 0; i < newEntity.getSize(); i++)
-            {
-                set = newEntity.getProperty(i);
-                
-                System.out.println(set[0] + ":  " + set[1]);
-            }
-            
-            System.out.println("Confirm changes?");
-            System.out.println("1.  Yes.");
-            System.out.println("2.  No.");
-            System.out.println("3.  Cancel.");
-            
-            int i = input.nextInt();
-            
-            if (i == 1)
-                option = 0;
-            
-            if (i == 3)
-                break;
-        }
-        
-        if (option == 0)
-            return newEntity;
-        
-        else
-            return entity;
-    }
+//    public static Entity ModifyEntity(Entity entity)
+//    {
+//        Scanner input = new Scanner(System.in);
+//        //System.out.println(entity.getPKColumn() + entity.getTableName());
+//        Entity newEntity = new Entity();
+//        
+//        String[] set = new String[2];
+//        
+//        int option = 1;
+//        
+//        while (option > 0)
+//        {
+//            for (int i = 0; i < entity.getSize(); i++)
+//            {
+//                //set = entity.getProperty(i);
+//            
+//                System.out.println("Current " + set[0] + ":  " + set[1]);
+//            
+//                System.out.println("New " + set[0] + ":  ");
+//                newEntity.setProperty(set[0], input.nextLine());
+//            }
+//            
+//            System.out.println("Modified entity:  ");
+//            
+//            for (int i = 0; i < newEntity.getSize(); i++)
+//            {
+//                //set = newEntity.getProperty(i);
+//                
+//                System.out.println(set[0] + ":  " + set[1]);
+//            }
+//            
+//            System.out.println("Confirm changes?");
+//            System.out.println("1.  Yes.");
+//            System.out.println("2.  No.");
+//            System.out.println("3.  Cancel.");
+//            
+//            int i = input.nextInt();
+//            
+//            if (i == 1)
+//                option = 0;
+//            
+//            if (i == 3)
+//                break;
+//        }
+//        
+//        if (option == 0)
+//            return newEntity;
+//        
+//        else
+//            return entity;
+//    }
     
     public static void PrintEntity(Entity entity)
     {

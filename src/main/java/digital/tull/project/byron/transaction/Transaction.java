@@ -18,11 +18,11 @@ package digital.tull.project.byron.transaction;
 
 
 
-public class Transaction implements TableStatement
+public class Transaction// implements TableStatement
 {
-	@Override
-    public String getStatement()
-    {
-		return new String();
-    }
+//	@Override
+//    public String getStatement(String[] parameters, int[] columnTypeKey)
+//    {
+//		return parameters[0];
+//    }
 }

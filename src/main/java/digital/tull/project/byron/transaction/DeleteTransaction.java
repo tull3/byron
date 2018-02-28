@@ -18,14 +18,19 @@ package digital.tull.project.byron.transaction;
 
 public class DeleteTransaction extends TransactionDecorator
 {
-	public DeleteTransaction(TableStatement tableStatement)
+	private final String pkColumn;
+	private final String pkValue;
+	
+	public DeleteTransaction(TableStatement tableStatement, String pkColumn, String pkValue)
 	{
 		super(tableStatement);
+		this.pkColumn = pkColumn;
+		this.pkValue = pkValue;
 	}
 	
 	@Override
 	public String getStatement()
 	{
-		return "DELETE FROM " + super.getStatement() + " WHERE ? = ?";
+		return "DELETE FROM " + super.getStatement() + " WHERE " + pkColumn + " = " + pkValue;
 	}
 }

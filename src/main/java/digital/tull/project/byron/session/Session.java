@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -35,102 +36,75 @@ import java.util.Scanner;
 import digital.tull.project.byron.engine.ConnectionManager;
 import digital.tull.project.byron.engine.DataEngine;
 import digital.tull.project.byron.transaction.Entity;
+import digital.tull.project.byron.transaction.EntityFactory;
 import digital.tull.project.byron.transaction.Table;
+import digital.tull.project.byron.transaction.TableStatement;
 import digital.tull.project.byron.transaction.TransactionType;
 
 
 
 public class Session
 {
-    //eventually, session objects will be used to record transaction data in log files
-    //right now they are just used to conduct transactions
-    private User user;
-    private boolean validSession;
-    private String[] tableNamesArray;
     private Properties properties;
-    private Table table;
+    private List<String> columnNames;
+    private String tableName;
+    private String pkColumn;
+    private List<Entity> entityList;
+    private String record;
+    private Entity activeEntity;
+    private TransactionType transactionType;
     
-    private Session()
+    public Session(final String tableName)
     {
-    	
+    	this.tableName = tableName;
     }
     
-    public void startSession()
+    public Session(final String tableName, final String record, final TransactionType transactionType)
+    {
+    	this.transactionType = transactionType;
+    	this.record = record;
+    	this.tableName = tableName;
+    }
+    
+    public Session runSession()
     {
     	loadDefaultProperties();
-    	DataEngine.Connect(properties);
-    	//setTableData();
+    	DataEngine engine = new DataEngine(properties);
+    	populateData(engine);
+    	
+    	if (transactionType == null)
+    		return this;
+    	
+    	final Table table = new Table(tableName, pkColumn, columnNames);
+    	
+    	if (transactionType == TransactionType.CREATE_ENTITY)
+    	{
+    		table.consumeStatement(table.withTransaction(transactionType, record), engine);
+    		return this;
+    	}
+    	
+    	System.out.println("Current Columns:");
+    	
+    	for (int i = 0; i < columnNames.size(); i++)
+    	{
+    		System.out.print(columnNames.get(i) + ":  ");
+    		System.out.print(activeEntity.getProperty(columnNames.get(i)) + "  ");
+    	}
+    	
+    	System.out.println();
+    	
+    	final TableStatement transaction = table.withTransaction(transactionType, record);
+    	
+    	table.consumeStatement(transaction, engine);
+    	
+    	return this;
     }
-    
-    public void loadSessionTable(String tableName)
-    {
-    	table = new Table(tableName);
-    }
-
-    public User getUser()
-    {
-        return user;
-    }
-
-    public boolean isValidSession()
-    {
-        return validSession;
-    }
-    
-//    public Session Login(User user)
-//    {
-//        Session session = null;
-//        
-//        try (Scanner input = new Scanner(Paths.get("users.txt")))
-//        {
-//            String text = null;
-//            
-//            String[] items = new String[3];
-//            
-//            search:
-//            
-//            while (input.hasNextLine())
-//            {
-//                text = input.nextLine();
-//                
-//                items = text.split(";");
-//                
-//                if (items[0].equals(user.getID()) && items[1].equals(user.getPasswd()))
-//                {
-//                    user.setGroupID(items[2]);
-//                    session = new Session(user);
-//                    break search;
-//                }
-//            }
-//            
-//            if (session.isValidSession())
-//                System.out.println("User " + user.getID() + " is authenticated with group " + user.getGroupID() + ".");
-//            
-//            
-//            
-//        }
-//        catch (IOException e)
-//        {
-//            System.err.println(e.toString());
-//            System.exit(1);
-//        }
-//        
-//        catch (NullPointerException e)
-//        {
-//            System.out.println("User not authenticated.  Exiting.");
-//            System.exit(1);
-//        }
-//        
-//        loadDefaultProperties();
-//        
-//        return session;
-//    }
     
     private void loadDefaultProperties()
     {
         properties = new Properties();
         
-        try (FileReader in = new FileReader(user.getID() + ".properties"))
+        try (FileReader in = new FileReader("will.properties"))
         {
             properties.load(in);
         }
@@ -149,47 +123,97 @@ public class Session
         }
     }
     
-    private void setTableData(String tableName)
+    public void populateData(DataEngine engine)
     {
+    	//loading some potentially useful data about the current table
+    	//not all of this is used right now
+    	
     	String catalog = null;
         String schema = "APP";
         String table = tableName;
         String column = null;
-        List<String> tableNames = new ArrayList<String>();
+        columnNames = new ArrayList<String>();
+        Connection connection = engine.getConnection();
         
         try (
-                Statement s = DataEngine.GetConnection().createStatement(
+                Statement s = connection.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE
                         );
-                ResultSet rs = s.executeQuery("select s.schemaname || '.' || t.tablename from sys.systables t, sys.sysschemas s where t.schemaid = s.schemaid and t.tabletype = 'T' order by s.schemaname, t.tablename");
+                ResultSet resultSet = s.executeQuery("SELECT * FROM " + tableName);
                 )
         {
-            ResultSetMetaData metaData = rs.getMetaData();
-            int numberOfColumns = metaData.getColumnCount();
+            DatabaseMetaData dbData = connection.getMetaData();
             
-            while (rs.next())
+            ResultSet rs2 = dbData.getColumns(catalog, schema, table, column);
+            
+            ResultSet rs1 = dbData.getPrimaryKeys(catalog, schema, table);
+            
+            while (rs1.next())
             {
-                for (int i = 1; i <= numberOfColumns; i++)
-                {
-                    tableNames.add(rs.getString(i));
-                }
+                pkColumn = rs1.getString(4);
             }
             
+            rs1.close();
             
+            while (rs2.next())
+            {
+            	columnNames.add(rs2.getString(4));
+            }
+            
+            rs2.close();
+            
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int numberOfColumns = metaData.getColumnCount();
+            //columnTypeKey = new int[numberOfColumns];
+            
+//            for (int i = 0; i < numberOfColumns; i++)
+//            {
+//            	columnTypeKey[i] = metaData.getColumnType(i+1);
+//            }
+            
+            entityList = new ArrayList<Entity>();
+            //pkValueList = new ArrayList<String>();
+            
+            while (resultSet.next())
+            {
+            	List<String[]> properties = new ArrayList<String[]>();
+            	
+                for (int i = 1; i <= numberOfColumns; i++)
+                {
+                	String[] set = new String[2];
+                	
+                    set[0] = metaData.getColumnName(i);
+                    set[1] = resultSet.getString(metaData.getColumnName(i));
+                    
+                    properties.add(set);
+                }
+                
+                Entity entity = new Entity(properties);
+                
+                if (resultSet.getString(pkColumn).equals(record))
+               	{
+                	activeEntity = entity;
+               	}
+                
+                //pkValueList.add(resultSet.getString(pkColumn));
+                entityList.add(entity);
+            }
+            
+            resultSet.close();
+            
+            DataEngine.Disconnect();
         }
         
         catch (SQLException e)
         {
             e.printStackTrace();
-            DataEngine.Disconnect();
         }
-        
-        tableNamesArray = tableNames.toArray(new String[tableNames.size()]);
     }
     
-    public String[] getTableNames()
+    public void printEntityList()
     {
-    	return tableNamesArray;
+    	for (int i = 0; i < entityList.size(); i++)
+    		System.out.println(entityList.get(i).toString());
     }
 }

@@ -16,52 +16,35 @@
 
 package digital.tull.project.byron.engine;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-
-import digital.tull.project.byron.logic.Menus;
-import digital.tull.project.byron.session.Session;
-import digital.tull.project.byron.session.User;
-import digital.tull.project.byron.transaction.Entity;
-import digital.tull.project.byron.transaction.Table;
-
-
 
 public class DataEngine
 {
     private static Connection conn;
+    private final Properties properties;
     
-    protected DataEngine()
+    public DataEngine(Properties properties)
     {
-        
-        //this.transaction = transaction;
+    	this.properties = properties;
     }
     
-    public static Connection GetConnection()
+    public Connection getConnection()
     {
+    	Connect();
+    	
     	return conn;
     }
     
-    public static void Connect(Properties properties)
+    private void Connect()
     {    	
         try
         {
             DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
             
             conn = DriverManager.getConnection("jdbc:derby:" + properties.getProperty("derby.system.home") + properties.getProperty("derby.db.name"), properties);
-            
-            //conn.setAutoCommit(false);
         }
         
         catch (SQLException e)

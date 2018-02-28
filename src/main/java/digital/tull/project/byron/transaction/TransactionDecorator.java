@@ -25,6 +25,7 @@ public abstract class TransactionDecorator implements TableStatement
 		this.tableStatement = tableStatement;
 	}
 	
+	@Override
 	public String getStatement()
 	{
 		return tableStatement.getStatement();

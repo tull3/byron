@@ -27,10 +27,6 @@ public class App
     {
         Menus.Welcome();
         
-        if (args[0] == null)
-        	new Logic().run();
-        
-        else
-        	new Logic().runWithArgs(args);
+        new Logic().runWithArgs(args);
     }
 }

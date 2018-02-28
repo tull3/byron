@@ -25,11 +25,7 @@ import java.util.Map;
 
 public class Entity
 {
-    private List<String[]> properties = new ArrayList<String[]>();
-    //private List<String> map = new ArrayList();
-//    private String pkColumn;
-//    private String pkValue;
-//    private String tableName;
+    private final List<String[]> properties;
     private boolean cancelFlag;
     private boolean deleteFlag;
     private boolean blankFlag;
@@ -38,14 +34,14 @@ public class Entity
     
     public Entity()
     {
+    	properties = new ArrayList<String[]>();
         blankFlag = true;
     }
     
-//    public Entity(String pkColumn, String tableName)
-//    {
-//        this.pkColumn = pkColumn;
-//        this.tableName = tableName;
-//    }
+    public Entity(final List<String[]> properties)
+    {
+        this.properties = properties;
+    }
     
     public boolean isBlank()
     {
@@ -86,28 +82,6 @@ public class Entity
         return value;
     }
     
-//    public String getTableName()
-//    {
-//        return tableName;
-//    }
-//    
-//    public Entity setTableName(String tableName)
-//    {
-//        this.tableName = tableName;
-//        return this;
-//    }
-//    
-//    public Entity setPKColumn(String pkColumn)
-//    {
-//        this.pkColumn = pkColumn;
-//        return this;
-//    }
-//    
-//    public String getPKColumn()
-//    {
-//        return pkColumn;
-//    }
-    
     public String getPKValue(String pkColumn)
     {
         String[] set = new String[2];
@@ -127,13 +101,7 @@ public class Entity
         return properties;
     }
     
-    public void setProperties(List<String[]> properties)
-    {
-    	blankFlag = false;
-        this.properties = properties;
-    }
-    
-    public String[] getProperty(int key)
+    public String getProperty(int key)
     {
 //        String[] mapping = new String[properties.size()];
 //        
@@ -144,26 +112,24 @@ public class Entity
         
         String[] set = properties.get(key);
         
-        return set;
+        return set[1];
     }
     
-    public void setProperty(String key, String value)
-    {
-    	blankFlag = false;
-    	
-        String[] set = {key, value};
-        
-        properties.add(set);
-        System.out.println(key + value);
-        System.out.println(set[0] + set[1]);
-    }
-    
-    public void setProperties(String[] set)
-    {
-    	blankFlag = false;
-    	
-        properties.add(set);
-    }
+//    public void setProperty(String key, String value)
+//    {
+//    	blankFlag = false;
+//    	
+//        String[] set = {key, value};
+//        
+//        properties.add(set);
+//    }
+//    
+//    public void setProperties(String[] set)
+//    {
+//    	blankFlag = false;
+//    	
+//        properties.add(set);
+//    }
     
 //    public void setPropertyList(List<String> value)
 //    {
@@ -174,11 +140,6 @@ public class Entity
     public int getSize()
     {
         return properties.size();
-    }
-    
-    public void reset()
-    {
-    	properties = new ArrayList<>();
     }
     
     @Override
@@ -192,6 +153,7 @@ public class Entity
             String s = set[0] + ":" + set[1] + "  ";
             string.append(s);
         }
+        
         return string.toString();
     }
 }
