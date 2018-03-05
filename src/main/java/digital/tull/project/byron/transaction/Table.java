@@ -32,7 +32,7 @@ import java.util.Scanner;
 import digital.tull.project.byron.engine.ConnectionManager;
 import digital.tull.project.byron.engine.DataEngine;
 import digital.tull.project.byron.logic.Menus;
-import digital.tull.project.byron.session.Session;
+import digital.tull.project.byron.logic.Session;
 
 
 

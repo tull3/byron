@@ -28,7 +28,7 @@ public class UpdateTransaction extends TransactionDecorator
 			if (i == 1)
 			{
 				System.out.println("Column to update:");
-				newStatement.append(input.nextLine() + " = ");
+				newStatement.append(input.nextLine().toUpperCase() + " = ");
 			}
 			else
 			{

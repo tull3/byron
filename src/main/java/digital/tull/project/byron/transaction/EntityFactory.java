@@ -20,10 +20,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import digital.tull.project.byron.logic.Menus;
-import digital.tull.project.byron.session.Session;
-import digital.tull.project.byron.session.User;
-
-
+import digital.tull.project.byron.logic.Session;
 
 public class EntityFactory
 {
@@ -139,19 +136,19 @@ public class EntityFactory
 //        return newEntity;
 //    }
     
-    public static User BuildUser()
-    {
-        User user = new User();
-        Scanner input = new Scanner(System.in);
-        
-        System.out.println("Username:");
-        user.setID(input.nextLine());
-    
-        System.out.println("Password:");
-        user.setPasswd(input.nextLine());
-        
-        return user;
-    }
+//    public static User BuildUser()
+//    {
+//        User user = new User();
+//        Scanner input = new Scanner(System.in);
+//        
+//        System.out.println("Username:");
+//        user.setID(input.nextLine());
+//    
+//        System.out.println("Password:");
+//        user.setPasswd(input.nextLine());
+//        
+//        return user;
+//    }
     
 //    public static Entity BuildEntity(List<Entity> entityList, String pkColumn, String tableName)
 //    {

@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import digital.tull.project.byron.session.Session;
-import digital.tull.project.byron.session.User;
+
+import digital.tull.project.byron.logic.Session;
 import digital.tull.project.byron.transaction.InsertTransaction;
 import digital.tull.project.byron.transaction.Entity;
 import digital.tull.project.byron.transaction.Table;
@@ -159,28 +159,28 @@ public class ConnectionManager
         }
     }
     
-    private static void loadDefaultProperties(User user)
-    {
-        defaultProps = new Properties();
-        
-        try (FileReader in = new FileReader(user.getID() + ".properties"))
-        {
-            defaultProps.load(in);
-        }
-        
-        catch (FileNotFoundException e)
-        {
-            System.out.println(e.toString());
-            System.out.println("User has not created default properties yet.");
-            return;
-        }
-        
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
+//    private static void loadDefaultProperties(User user)
+//    {
+//        defaultProps = new Properties();
+//        
+//        try (FileReader in = new FileReader(user.getID() + ".properties"))
+//        {
+//            defaultProps.load(in);
+//        }
+//        
+//        catch (FileNotFoundException e)
+//        {
+//            System.out.println(e.toString());
+//            System.out.println("User has not created default properties yet.");
+//            return;
+//        }
+//        
+//        catch (IOException e)
+//        {
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
+//    }
     
     public static Connection GetConnection()
     {
