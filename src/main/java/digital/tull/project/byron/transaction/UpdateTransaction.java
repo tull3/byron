@@ -2,14 +2,15 @@ package digital.tull.project.byron.transaction;
 
 import java.util.Scanner;
 
-public class UpdateTransaction extends TransactionDecorator
+public class UpdateTransaction implements Transaction
 {
+	private final String tableName;
 	private final String pkColumn;
 	private final String pkValue;
 	
-	public UpdateTransaction(TableStatement tableStatement, String pkColumn, String pkValue)
+	public UpdateTransaction(String tableName, String pkColumn, String pkValue)
 	{
-		super(tableStatement);
+		this.tableName = tableName;
 		this.pkColumn = pkColumn;
 		this.pkValue = pkValue;
 	}
@@ -21,7 +22,7 @@ public class UpdateTransaction extends TransactionDecorator
 		
 		Scanner input = new Scanner(System.in);
 		
-		newStatement.append("UPDATE " + super.getStatement() + " SET ");
+		newStatement.append("UPDATE " + tableName + " SET ");
 		
 		for (int i = 1; i <= 2; i++)
 		{

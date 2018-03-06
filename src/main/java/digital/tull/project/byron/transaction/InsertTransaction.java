@@ -19,13 +19,14 @@ package digital.tull.project.byron.transaction;
 import java.util.List;
 import java.util.Scanner;
 
-public class InsertTransaction extends TransactionDecorator
+public class InsertTransaction implements Transaction
 {
+	private final String tableName;
     private final List<String> columnNames;
     
-    public InsertTransaction(TableStatement tableStatement, List<String> columnNames)
+    public InsertTransaction(String tableName, List<String> columnNames)
     {
-    	super(tableStatement);
+    	this.tableName = tableName;
         this.columnNames = columnNames;
     }
     
@@ -35,7 +36,7 @@ public class InsertTransaction extends TransactionDecorator
     	StringBuilder newStatement = new StringBuilder();
     	Scanner input = new Scanner(System.in);
     	
-    	newStatement.append("INSERT INTO " + super.getStatement() + " VALUES ( ");
+    	newStatement.append("INSERT INTO " + tableName + " VALUES ( ");
     	
     	for (int i = 0; i < columnNames.size(); i++)
     	{

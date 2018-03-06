@@ -16,25 +16,11 @@
 
 package digital.tull.project.byron.transaction;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
-import digital.tull.project.byron.engine.ConnectionManager;
 import digital.tull.project.byron.engine.DataEngine;
-import digital.tull.project.byron.logic.Menus;
-import digital.tull.project.byron.logic.Session;
-
-
 
 public class Table
 {
@@ -44,7 +30,7 @@ public class Table
     private List<Entity> entityList;
     private List<String> pkValueList;
     private int[] columnTypeKey;
-    private final TableStatement transaction;
+    private Transaction transaction;
     private final String pkColumn;
     private final List<String> columnNames;
     
@@ -53,7 +39,6 @@ public class Table
     	this.columnNames = columnNames;
     	this.pkColumn = pkColumn;
         this.tableName = tableName;
-        transaction = new BasicTransaction(tableName);
     }
 
     public String getTableName()
@@ -76,21 +61,21 @@ public class Table
     	return activeEntity;
     }
     
-    public TableStatement withTransaction(final TransactionType type, final String activeRecord)
+    public Transaction withTransaction(final TransactionType type, final String activeRecord)
     {
     	if (type == TransactionType.MODIFY_ENTITY)
-    		return new UpdateTransaction(transaction, pkColumn, "'" + activeRecord + "'");
+    		return new UpdateTransaction(tableName, pkColumn, "'" + activeRecord + "'");
     	
     	else if (type == TransactionType.CREATE_ENTITY)
-    		return new InsertTransaction(transaction, columnNames);
+    		return new InsertTransaction(tableName, columnNames);
     	
     	else if (type == TransactionType.DELETE_ENTITY)
-    		return new DeleteTransaction(transaction, pkColumn, "'" + activeRecord + "'");
+    		return new DeleteTransaction(tableName, pkColumn, "'" + activeRecord + "'");
     	
     	return transaction;
     }    
     
-    public void consumeStatement(final TableStatement statement, final DataEngine engine)
+    public void consumeStatement(final Transaction statement, final DataEngine engine)
     {
     	String sql = statement.getStatement();
     	

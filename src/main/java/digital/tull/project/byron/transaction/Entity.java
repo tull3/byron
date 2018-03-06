@@ -17,53 +17,16 @@
 package digital.tull.project.byron.transaction;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-
 
 public class Entity
 {
-    private final List<String[]> properties;
-    private boolean cancelFlag;
-    private boolean deleteFlag;
-    private boolean blankFlag;
+	private final List<Column> columns;
+    private List<String[]> properties;
     
-    //TODO: add foreign key fields that can't be changed at runtime, like Author's Name or pkColumn
-    
-    public Entity()
+    public Entity(List<Column> columns)
     {
-    	properties = new ArrayList<String[]>();
-        blankFlag = true;
-    }
-    
-    public Entity(final List<String[]> properties)
-    {
-        this.properties = properties;
-    }
-    
-    public boolean isBlank()
-    {
-    	return blankFlag;
-    }
-
-    public boolean isCanceled()
-    {
-        return cancelFlag;
-    }
-
-    public boolean hasDeleteFlag() {
-		return deleteFlag;
-	}
-
-	public void setDeleteFlag(boolean deleteFlag) {
-		this.deleteFlag = deleteFlag;
-	}
-
-	public void setCancelFlag(boolean cancelFlag)
-    {
-        this.cancelFlag = cancelFlag;
+        this.columns = columns;
     }
     
     public String getProperty(String key)
@@ -115,45 +78,51 @@ public class Entity
         return set[1];
     }
     
-//    public void setProperty(String key, String value)
-//    {
-//    	blankFlag = false;
-//    	
-//        String[] set = {key, value};
-//        
-//        properties.add(set);
-//    }
-//    
-//    public void setProperties(String[] set)
-//    {
-//    	blankFlag = false;
-//    	
-//        properties.add(set);
-//    }
-    
-//    public void setPropertyList(List<String> value)
-//    {
-//        for (int i = 1; i <= value.size(); i++)
-//            propertyList.add(value.get(i - 1));
-//    }
-    
-    public int getSize()
+    public String getColumnString(String key)
     {
-        return properties.size();
+    	Column column = null;
+    	
+    	for (int i = 0; i < columns.size(); i++)
+    	{
+    		if (columns.get(i).getLabel().equals(key))
+    			column = columns.get(i);
+    	}
+    	
+    	if (column == null)
+    	{
+    		System.out.println("Column not found.");
+    		return null;
+    	}
+    	
+    	return column.toString();
     }
     
-    @Override
-    public String toString()
+    public Object getColumnData(String key)
     {
-        StringBuilder string = new StringBuilder();
+    	Column column = null;
+    	
+    	for (int i = 0; i < columns.size(); i++)
+    	{
+    		if (columns.get(i).getLabel().equals(key))
+    			column = columns.get(i);
+    	}
+    	
+    	if (column == null)
+    	{
+    		System.out.println("Column not found.");
+    		return null;
+    	}
+    	
+    	return column.getData();
+    }
+    
+    public void printString()
+    {
+        //StringBuilder string = new StringBuilder();
         
-        for (int i = 0; i < properties.size(); i++)
+        for (int i = 0; i < columns.size(); i++)
         {
-            String[] set = properties.get(i);
-            String s = set[0] + ":" + set[1] + "  ";
-            string.append(s);
+            System.out.println(columns.get(i).getLabel() + ":  " + columns.get(i).toString());
         }
-        
-        return string.toString();
     }
 }

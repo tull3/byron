@@ -16,7 +16,24 @@
 
 package digital.tull.project.byron.transaction;
 
-public interface Transaction
+abstract class ColumnDecorator implements Column
 {
-	public String getStatement();
+	private final Column column;
+	
+	public ColumnDecorator(Column column)
+	{
+		this.column = column;
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return column.getLabel();
+	}
+	
+	@Override
+	public Object getData()
+	{
+		return column.getData();
+	}
 }

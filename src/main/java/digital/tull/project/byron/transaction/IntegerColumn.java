@@ -16,18 +16,31 @@
 
 package digital.tull.project.byron.transaction;
 
-public class BasicTransaction implements TableStatement
+public class IntegerColumn extends ColumnDecorator
 {
-	private final String tableName;
+	private final Integer data;
 	
-	public BasicTransaction(String tableName)
+	public IntegerColumn(Column column, Integer data)
 	{
-		this.tableName = tableName;
+		super(column);
+		this.data = data;
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return super.getLabel();
 	}
 	
 	@Override
-	public String getStatement()
+	public Integer getData()
 	{
-		return tableName;
+		return data;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return data.toString();
 	}
 }

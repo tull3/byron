@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -34,22 +35,20 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeSet;
-
-import digital.tull.project.byron.engine.ConnectionManager;
 import digital.tull.project.byron.engine.DataEngine;
-import digital.tull.project.byron.transaction.BasicTransaction;
+import digital.tull.project.byron.transaction.StringColumn;
+import digital.tull.project.byron.transaction.Column;
+import digital.tull.project.byron.transaction.DecimalColumn;
 import digital.tull.project.byron.transaction.DeleteTransaction;
+import digital.tull.project.byron.transaction.DoubleColumn;
 import digital.tull.project.byron.transaction.Entity;
-import digital.tull.project.byron.transaction.EntityFactory;
 import digital.tull.project.byron.transaction.InsertTransaction;
+import digital.tull.project.byron.transaction.IntegerColumn;
+import digital.tull.project.byron.transaction.NullColumn;
 import digital.tull.project.byron.transaction.Table;
-import digital.tull.project.byron.transaction.TableStatement;
 import digital.tull.project.byron.transaction.Transaction;
 import digital.tull.project.byron.transaction.TransactionType;
 import digital.tull.project.byron.transaction.UpdateTransaction;
-
-
 
 public class Session
 {
@@ -62,12 +61,11 @@ public class Session
     private Entity activeEntity;
     private TransactionType transactionType;
     private DataEngine engine;
-    private final TableStatement transaction;
+    private Transaction transaction;
     
     public Session(final String tableName)
     {
     	this.tableName = tableName;
-    	transaction = new BasicTransaction(tableName);
     }
     
     public Session(final String tableName, final String record, final TransactionType transactionType)
@@ -75,7 +73,6 @@ public class Session
     	this.transactionType = transactionType;
     	this.record = record;
     	this.tableName = tableName;
-    	transaction = new BasicTransaction(tableName);
     }
     
     public Session startSession()
@@ -94,16 +91,16 @@ public class Session
     	return this;
     }
     
-    private TableStatement formTransaction()
+    private Transaction formTransaction()
     {
     	if (transactionType == TransactionType.MODIFY_ENTITY)
-    		return new UpdateTransaction(transaction, pkColumn, "'" + record + "'");
+    		return new UpdateTransaction(tableName, pkColumn, "'" + record + "'");
     	
     	else if (transactionType == TransactionType.CREATE_ENTITY)
-    		return new InsertTransaction(transaction, columnNames);
+    		return new InsertTransaction(tableName, columnNames);
     	
     	else if (transactionType == TransactionType.DELETE_ENTITY)
-    		return new DeleteTransaction(transaction, pkColumn, "'" + record + "'");
+    		return new DeleteTransaction(tableName, pkColumn, "'" + record + "'");
     	
     	return transaction;
     }
@@ -209,9 +206,40 @@ public class Session
             while (resultSet.next())
             {
             	List<String[]> properties = new ArrayList<String[]>();
+            	List<Column> columns = new ArrayList<Column>();
             	
                 for (int i = 1; i <= numberOfColumns; i++)
                 {
+                	if (metaData.getColumnType(i) == 12)
+                	{
+                		columns.add(new StringColumn(new NullColumn(metaData.getColumnName(i)),
+                				resultSet.getString(metaData.getColumnName(i))));
+                	}
+                	
+                	else if (metaData.getColumnType(i) == 4 || metaData.getColumnType(i) == 5 || metaData.getColumnType(i) == -5)
+                	{
+                		columns.add(new IntegerColumn(new NullColumn(metaData.getColumnName(i)),
+                				Integer.valueOf(resultSet.getInt(i))));
+                	}
+                	
+                	else if (metaData.getColumnType(i) == 3 || metaData.getColumnType(i) == 2)
+                	{
+                		columns.add(new DecimalColumn(new NullColumn(metaData.getColumnName(i)),
+                				BigDecimal.valueOf(resultSet.getDouble(i))));
+                	}
+                	
+                	else if (metaData.getColumnType(i) == 8)
+                	{
+                		columns.add(new DoubleColumn(new NullColumn(metaData.getColumnName(i)),
+                				Double.valueOf(resultSet.getDouble(i))));
+                	}
+                	
+                	else
+                	{
+                		columns.add(new StringColumn(new NullColumn(metaData.getColumnName(i)),
+                				String.valueOf(resultSet.getObject(i))));
+                	}
+                	
                 	String[] set = new String[2];
                 	
                     set[0] = metaData.getColumnName(i);
@@ -220,7 +248,7 @@ public class Session
                     properties.add(set);
                 }
                 
-                Entity entity = new Entity(properties);
+                Entity entity = new Entity(columns);
                 
                 if (record != null)
                 {
@@ -247,8 +275,13 @@ public class Session
     
     public void printEntityList()
     {
+//    	for (int i = 0; i < columnNames.size(); i++)
+//    		System.out.printf("%12s", columnNames.get(i));
+    	
+    	//System.out.println();
+    	
     	for (int i = 0; i < entityList.size(); i++)
-    		System.out.println(entityList.get(i).toString());
+    		entityList.get(i).printString();
     }
     
     private int checkTableName(String initialTableName)

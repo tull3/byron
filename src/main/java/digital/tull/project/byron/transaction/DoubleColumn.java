@@ -16,7 +16,31 @@
 
 package digital.tull.project.byron.transaction;
 
-public interface TableStatement
+public class DoubleColumn extends ColumnDecorator
 {
-	public String getStatement();
+	private final Double data;
+
+	public DoubleColumn(Column column, Double data)
+	{
+		super(column);
+		this.data = data;
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return super.getLabel();
+	}
+
+	@Override
+	public Double getData()
+	{
+		return data;
+	}
+
+	@Override
+	public String toString()
+	{
+		return data.toString();
+	}
 }

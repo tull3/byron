@@ -16,7 +16,9 @@
 
 package digital.tull.project.byron.transaction;
 
-public class Column
+public interface Column
 {
+	public abstract String getLabel();
 	
+	public abstract Object getData();
 }

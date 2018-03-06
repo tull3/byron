@@ -16,18 +16,33 @@
 
 package digital.tull.project.byron.transaction;
 
-public abstract class TransactionDecorator implements TableStatement
+import java.math.BigDecimal;
+
+public class DecimalColumn extends ColumnDecorator
 {
-	protected final TableStatement tableStatement;
-	
-	public TransactionDecorator(TableStatement tableStatement)
+	private final BigDecimal data;
+
+	public DecimalColumn(Column column, BigDecimal data)
 	{
-		this.tableStatement = tableStatement;
+		super(column);
+		this.data = data;
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return super.getLabel();
 	}
 	
 	@Override
-	public String getStatement()
+	public BigDecimal getData()
 	{
-		return tableStatement.getStatement();
+		return data;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return data.toString();
 	}
 }
