@@ -19,19 +19,17 @@ package digital.tull.project.byron.transaction;
 public class DeleteTransaction implements Transaction
 {
 	private final String tableName;
-	private final String pkColumn;
-	private final String pkValue;
+	private final String[] primaryKeys;
 	
-	public DeleteTransaction(String tableName, String pkColumn, String pkValue)
+	public DeleteTransaction(String tableName, String[] primaryKeys)
 	{
 		this.tableName = tableName;
-		this.pkColumn = pkColumn;
-		this.pkValue = pkValue;
+		this.primaryKeys = primaryKeys;
 	}
 	
 	@Override
 	public String getStatement()
 	{
-		return "DELETE FROM " + tableName + " WHERE " + pkColumn + " = " + pkValue;
+		return "DELETE FROM " + tableName + " WHERE " + primaryKeys[0] + " = " + primaryKeys[1];
 	}
 }

@@ -16,48 +16,22 @@
 
 package digital.tull.project.byron.transaction;
 
-import java.util.List;
-import java.util.Scanner;
+
 
 public class InsertTransaction implements Transaction
 {
 	private final String tableName;
-    private final List<String> columnNames;
+    private final String newValues;
     
-    public InsertTransaction(String tableName, List<String> columnNames)
+    public InsertTransaction(String tableName, String newValues)
     {
     	this.tableName = tableName;
-        this.columnNames = columnNames;
+        this.newValues = newValues;
     }
     
     @Override
     public String getStatement()
     {
-    	StringBuilder newStatement = new StringBuilder();
-    	Scanner input = new Scanner(System.in);
-    	
-    	newStatement.append("INSERT INTO " + tableName + " VALUES ( ");
-    	
-    	for (int i = 0; i < columnNames.size(); i++)
-    	{
-    		System.out.println(columnNames.get(i));
-    		
-    		String inputString = input.nextLine();
-    		
-    		if (inputString.equals(""))
-    			newStatement.append("NULL, ");
-    		else
-    			newStatement.append("'" + inputString + "'" + ", ");
-    	}
-    	
-    	newStatement.deleteCharAt(newStatement.length() - 1);
-    	
-    	newStatement.deleteCharAt(newStatement.length() - 1);
-    	
-    	newStatement.append(" )");
-    	
-    	input.close();
-    	
-    	return newStatement.toString();
+    	return "INSERT INTO " + tableName + " VALUES " + newValues;
     }
 }

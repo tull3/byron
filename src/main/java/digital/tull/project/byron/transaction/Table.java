@@ -61,19 +61,19 @@ public class Table
     	return activeEntity;
     }
     
-    public Transaction withTransaction(final TransactionType type, final String activeRecord)
-    {
-    	if (type == TransactionType.MODIFY_ENTITY)
-    		return new UpdateTransaction(tableName, pkColumn, "'" + activeRecord + "'");
-    	
-    	else if (type == TransactionType.CREATE_ENTITY)
-    		return new InsertTransaction(tableName, columnNames);
-    	
-    	else if (type == TransactionType.DELETE_ENTITY)
-    		return new DeleteTransaction(tableName, pkColumn, "'" + activeRecord + "'");
-    	
-    	return transaction;
-    }    
+//    public Transaction withTransaction(final TransactionType type, final String activeRecord)
+//    {
+//    	if (type == TransactionType.MODIFY_ENTITY)
+//    		return new UpdateTransaction(tableName, pkColumn, "'" + activeRecord + "'");
+//    	
+//    	else if (type == TransactionType.CREATE_ENTITY)
+//    		return new InsertTransaction(tableName, columnNames);
+//    	
+//    	else if (type == TransactionType.DELETE_ENTITY)
+//    		return new DeleteTransaction(tableName, pkColumn, "'" + activeRecord + "'");
+//    	
+//    	return transaction;
+//    }    
     
     public void consumeStatement(final Transaction statement, final DataEngine engine)
     {
@@ -92,7 +92,8 @@ public class Table
     	
     	catch (SQLException e)
     	{
-    		e.printStackTrace();;
+    		e.printStackTrace();
+    		DataEngine.Disconnect();
     	}
     }
     

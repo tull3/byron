@@ -93,14 +93,68 @@ public class Session
     
     private Transaction formTransaction()
     {
+    	Scanner input = new Scanner(System.in);
+    	String[] primaryKeys = {pkColumn, "'" + record + "'"};
+    	
+    	
     	if (transactionType == TransactionType.MODIFY_ENTITY)
-    		return new UpdateTransaction(tableName, pkColumn, "'" + record + "'");
+    	{
+    		String[] newValues = new String[2];
+    		
+    		for (int i = 1; i <= 2; i++)
+    		{
+    			if (i == 1)
+    			{
+    				System.out.println("Column to update:");
+    				newValues[0] = input.nextLine().toUpperCase();
+    			}
+    			else
+    			{
+    				System.out.println("Value to insert:");
+    				newValues[1] = "'" + input.nextLine() + "'";
+    			}
+    		}
+    		
+    		input.close();
+    		
+    		return new UpdateTransaction(tableName, primaryKeys, newValues);
+    	}
     	
     	else if (transactionType == TransactionType.CREATE_ENTITY)
-    		return new InsertTransaction(tableName, columnNames);
+    	{
+    		StringBuilder newStatement = new StringBuilder("( ");
+    		
+    		for (int i = 0; i < columnNames.size(); i++)
+        	{
+        		System.out.println(columnNames.get(i));
+        		
+        		String inputString = input.nextLine();
+        		
+        		if (inputString.equals(""))
+        			newStatement.append("NULL, ");
+        		else
+        			newStatement.append("'" + inputString + "'" + ", ");
+        	}
+    		
+    		newStatement.deleteCharAt(newStatement.length() - 1);
+        	
+        	newStatement.deleteCharAt(newStatement.length() - 1);
+        	
+        	newStatement.append(" )");
+        	
+        	input.close();
+    		
+    		return new InsertTransaction(tableName, newStatement.toString());
+    	}
     	
     	else if (transactionType == TransactionType.DELETE_ENTITY)
-    		return new DeleteTransaction(tableName, pkColumn, "'" + record + "'");
+    	{
+    		input.close();
+    		
+    		return new DeleteTransaction(tableName, primaryKeys);
+    	}
+    	
+    	input.close();
     	
     	return transaction;
     }
@@ -120,7 +174,7 @@ public class Session
     	for (int i = 0; i < columnNames.size(); i++)
     	{
     		System.out.print(columnNames.get(i) + ":  ");
-    		System.out.print(activeEntity.getProperty(columnNames.get(i)) + "  ");
+    		System.out.print(activeEntity.getColumnString(columnNames.get(i)) + "  ");
     	}
     	
     	System.out.println();

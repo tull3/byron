@@ -29,21 +29,21 @@ public class Entity
         this.columns = columns;
     }
     
-    public String getProperty(String key)
-    {
-        String value = null;
-        String[] set = new String[2];
-        
-        for (int i = 0; i < properties.size(); i++)
-        {
-            set = properties.get(i);
-            
-            if (set[0].equals(key))
-                value = set[1];
-        }
-        
-        return value;
-    }
+//    public String getProperty(String key)
+//    {
+//        String value = null;
+//        String[] set = new String[2];
+//        
+//        for (int i = 0; i < properties.size(); i++)
+//        {
+//            set = properties.get(i);
+//            
+//            if (set[0].equals(key))
+//                value = set[1];
+//        }
+//        
+//        return value;
+//    }
     
     public String getPKValue(String pkColumn)
     {

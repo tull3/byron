@@ -5,41 +5,19 @@ import java.util.Scanner;
 public class UpdateTransaction implements Transaction
 {
 	private final String tableName;
-	private final String pkColumn;
-	private final String pkValue;
+	private final String[] primaryKeys;
+	private final String[] newValues;
 	
-	public UpdateTransaction(String tableName, String pkColumn, String pkValue)
+	public UpdateTransaction(String tableName, String[] primaryKeys, String[] newValues)
 	{
 		this.tableName = tableName;
-		this.pkColumn = pkColumn;
-		this.pkValue = pkValue;
+		this.primaryKeys = primaryKeys;
+		this.newValues = newValues;
 	}
 	
 	@Override
 	public String getStatement()
 	{
-		StringBuilder newStatement = new StringBuilder();
-		
-		Scanner input = new Scanner(System.in);
-		
-		newStatement.append("UPDATE " + tableName + " SET ");
-		
-		for (int i = 1; i <= 2; i++)
-		{
-			if (i == 1)
-			{
-				System.out.println("Column to update:");
-				newStatement.append(input.nextLine().toUpperCase() + " = ");
-			}
-			else
-			{
-				System.out.println("Value to insert:");
-				newStatement.append("'" + input.nextLine() + "'");
-			}
-		}
-		
-		input.close();
-		
-		return newStatement.toString() + " WHERE " + pkColumn + " = " + pkValue;
+		return "UPDATE " + tableName + " SET " + newValues[0] + " = " + newValues[1] + " WHERE " + primaryKeys[0] + " = " + primaryKeys[1];
 	}
 }
