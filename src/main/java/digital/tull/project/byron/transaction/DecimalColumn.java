@@ -17,15 +17,17 @@
 package digital.tull.project.byron.transaction;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class DecimalColumn extends ColumnDecorator
 {
-	private final BigDecimal data;
+	private final List<BigDecimal> data = new ArrayList<>();
 
-	public DecimalColumn(Column column, BigDecimal data)
+	public DecimalColumn(Column column)
 	{
 		super(column);
-		this.data = data;
 	}
 
 	@Override
@@ -35,14 +37,48 @@ public class DecimalColumn extends ColumnDecorator
 	}
 	
 	@Override
-	public BigDecimal getData()
+	public List<BigDecimal> getData()
 	{
 		return data;
 	}
+
+	@Override
+    public int getLength() { return data.size(); }
+
+    @Override
+    public void addRecord(String record)
+    {
+        data.add(new BigDecimal(record));
+    }
+
+    private String getMaxValue()
+    {
+        Iterator it = data.iterator();
+        BigDecimal line;
+        int precision = 0;
+        int scale = 0;
+
+        while (it.hasNext())
+        {
+            line = (BigDecimal) it.next();
+
+            if (precision < line.precision())
+            {
+                precision = line.precision();
+            }
+
+            if (scale < line.scale())
+            {
+                scale = line.scale();
+            }
+        }
+
+        return String.valueOf(precision + 2) + "," + String.valueOf(scale);
+    }
 	
 	@Override
-	public String toString()
+	public String getDatabaseType()
 	{
-		return data.toString();
+		return "DECIMAL(" + getMaxValue() + ")";
 	}
 }

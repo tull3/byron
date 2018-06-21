@@ -16,14 +16,17 @@
 
 package digital.tull.project.byron.transaction;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class DoubleColumn extends ColumnDecorator
 {
-	private final Double data;
+	private final List<Double> data = new ArrayList<>();
 
-	public DoubleColumn(Column column, Double data)
+	public DoubleColumn(Column column)
 	{
 		super(column);
-		this.data = data;
 	}
 
 	@Override
@@ -33,14 +36,50 @@ public class DoubleColumn extends ColumnDecorator
 	}
 
 	@Override
-	public Double getData()
+	public List<Double> getData()
 	{
 		return data;
 	}
 
 	@Override
-	public String toString()
+	public int getLength() { return data.size(); }
+
+	@Override
+	public void addRecord(String record)
 	{
-		return data.toString();
+		data.add(Double.valueOf(record));
+	}
+
+	private String getMaxValue()
+	{
+		Iterator it = data.iterator();
+		String line;
+		int precision = 0;
+		int scale = 0;
+
+		while (it.hasNext())
+		{
+			line = (String) it.next();
+
+			String[] values = line.split(".");
+
+			if (precision < line.length())
+			{
+				precision = line.length();
+			}
+
+			if (scale < Integer.parseInt(values[1]))
+			{
+				scale = Integer.parseInt(values[1]);
+			}
+		}
+
+		return String.valueOf(precision + 2) + "," + String.valueOf(scale);
+	}
+
+	@Override
+	public String getDatabaseType()
+	{
+		return "DECIMAL(" + getMaxValue() + ")";
 	}
 }

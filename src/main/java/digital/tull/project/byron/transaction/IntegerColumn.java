@@ -16,31 +16,66 @@
 
 package digital.tull.project.byron.transaction;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class IntegerColumn extends ColumnDecorator
 {
-	private final Integer data;
-	
-	public IntegerColumn(Column column, Integer data)
+
+    private final List<Integer> data = new ArrayList<>();
+
+    public IntegerColumn(Column column)
+    {
+        super(column);
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return super.getLabel();
+    }
+
+    @Override
+    public List<Integer> getData()
+    {
+        return data;
+    }
+
+    @Override
+    public int getLength()
+    {
+        return data.size();
+    }
+
+	@Override
+	public void addRecord(String record)
 	{
-		super(column);
-		this.data = data;
+		data.add(Integer.valueOf(record));
+	}
+
+	private int getMaxValue()
+	{
+		Iterator it = data.iterator();
+		Integer line;
+		int size = 0;
+
+		while (it.hasNext())
+		{
+			line = (Integer) it.next();
+
+			if (size < line.SIZE)
+			{
+				size = line.SIZE;
+			}
+		}
+
+		return size + 2;
 	}
 
 	@Override
-	public String getLabel()
+	public String getDatabaseType()
 	{
-		return super.getLabel();
-	}
-	
-	@Override
-	public Integer getData()
-	{
-		return data;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return data.toString();
+		return "INT(" + getMaxValue() + ")";
 	}
 }

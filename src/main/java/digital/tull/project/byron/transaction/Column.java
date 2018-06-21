@@ -21,4 +21,10 @@ public interface Column
 	public abstract String getLabel();
 	
 	public abstract Object getData();
+
+	public abstract int getLength();
+
+	public abstract void addRecord(String record);
+
+	public abstract String getDatabaseType();
 }

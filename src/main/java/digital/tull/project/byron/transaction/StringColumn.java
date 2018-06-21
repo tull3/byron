@@ -16,14 +16,18 @@
 
 package digital.tull.project.byron.transaction;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class StringColumn extends ColumnDecorator
 {
-	private final String data;
+	private final List<String> data = new ArrayList<>();
+	private final ColumnType type = ColumnType.STRING_COLUMN;
 
-	public StringColumn(Column column, String data)
+	public StringColumn(Column column)
 	{
 		super(column);
-		this.data = data;
 	}
 
 	@Override
@@ -33,14 +37,41 @@ public class StringColumn extends ColumnDecorator
 	}
 	
 	@Override
-	public String getData()
+	public List<String> getData()
 	{
 		return data;
 	}
+
+    @Override
+    public int getLength() { return data.size(); }
+
+    @Override
+    public void addRecord(String record)
+    {
+        data.add(record);
+    }
+
+    private int getMaxValue()
+    {
+        Iterator it = data.iterator();
+        int size = 0;
+
+        while (it.hasNext())
+        {
+            String line = (String) it.next();
+
+            if (size < line.length())
+            {
+                size = line.length();
+            }
+        }
+
+        return size + 15;
+    }
 	
 	@Override
-	public String toString()
+	public String getDatabaseType()
 	{
-		return data;
+		return "VARCHAR(" + getMaxValue() + ")";
 	}
 }
