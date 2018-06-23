@@ -256,7 +256,7 @@ public class Session
             
             entityList = new ArrayList<Entity>();
             //pkValueList = new ArrayList<String>();
-            
+            //TODO: make date column and primary key column to index column rows
             while (resultSet.next())
             {
             	List<String[]> properties = new ArrayList<String[]>();
@@ -272,8 +272,7 @@ public class Session
                 	
                 	else if (metaData.getColumnType(i) == 4 || metaData.getColumnType(i) == 5 || metaData.getColumnType(i) == -5)
                 	{
-                		columns.add(new IntegerColumn(new NullColumn(metaData.getColumnName(i)),
-                				Integer.valueOf(resultSet.getInt(i))));
+                		columns.add(new IntegerColumn(new NullColumn(metaData.getColumnName(i))));
                 	}
                 	
                 	else if (metaData.getColumnType(i) == 3 || metaData.getColumnType(i) == 2)

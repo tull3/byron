@@ -57,16 +57,16 @@ public class IntegerColumn extends ColumnDecorator
 	private int getMaxValue()
 	{
 		Iterator it = data.iterator();
-		Integer line;
+		String line;
 		int size = 0;
 
 		while (it.hasNext())
 		{
-			line = (Integer) it.next();
+			line = (String) it.next();
 
-			if (size < line.SIZE)
+			if (size < line.length())
 			{
-				size = line.SIZE;
+				size = line.length();
 			}
 		}
 

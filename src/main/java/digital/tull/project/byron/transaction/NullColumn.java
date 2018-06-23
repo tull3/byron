@@ -29,5 +29,5 @@ public class NullColumn implements Column
     public void addRecord(String record) {}
 
     @Override
-    public String toString() { return ""; }
+    public String getDatabaseType() { return "NULL"; }
 }

@@ -68,9 +68,9 @@ public class DoubleColumn extends ColumnDecorator
 				precision = line.length();
 			}
 
-			if (scale < Integer.parseInt(values[1]))
+			if (scale < values[1].length())
 			{
-				scale = Integer.parseInt(values[1]);
+				scale = values[1].length();
 			}
 		}
 
