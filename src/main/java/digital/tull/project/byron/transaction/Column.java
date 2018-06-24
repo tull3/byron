@@ -18,13 +18,15 @@ package digital.tull.project.byron.transaction;
 
 public interface Column
 {
-	public abstract String getLabel();
+	abstract String getLabel();
 	
-	public abstract Object getData();
+	abstract Object getRecord();
 
-	public abstract int getLength();
+	abstract void setRecord(String record, int index);
 
-	public abstract void addRecord(String record);
+	abstract void addRecord(String record);
 
-	public abstract String getDatabaseType();
+	abstract int getNumberOfRecords();
+
+	abstract String getDatabaseType();
 }

@@ -30,10 +30,4 @@ abstract class ColumnDecorator implements Column
 	{
 		return column.getLabel();
 	}
-	
-	@Override
-	public Object getData()
-	{
-		return column.getData();
-	}
 }

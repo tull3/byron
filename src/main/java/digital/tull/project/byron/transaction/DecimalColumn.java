@@ -43,7 +43,7 @@ public class DecimalColumn extends ColumnDecorator
 	}
 
 	@Override
-    public int getLength() { return data.size(); }
+    public int getNumberOfRecords() { return data.size(); }
 
     @Override
     public void addRecord(String record)
